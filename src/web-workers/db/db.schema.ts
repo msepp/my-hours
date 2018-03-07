@@ -183,7 +183,7 @@ export class HoursDB extends Dexie {
   }
 
   // insertGroup inserts a single group into the database.
-  // Returns a promise that resolves with the new id of the inserted group.
+  // Returns a promise that resolves with the new group.
   public insertGroup(group: IGroup): Promise<IGroup> {
     this._log('insert.group', group);
 
@@ -195,7 +195,7 @@ export class HoursDB extends Dexie {
   }
 
   // insertTask inserts a single task into the database.
-  // Returns a promise that resolves with the new id of the inserted task.
+  // Returns a promise that resolves with the new task.
   public insertTask(task: ITask): Promise<ITask> {
     this._log('insert.task', task);
 
@@ -221,7 +221,7 @@ export class HoursDB extends Dexie {
     });
   }
 
-  // createReport returns history entries
+  // createReport returns a report with the given options
   public createReport(options: IReportOptions): Promise<IReport> {
     this._log('read.history, options:', options);
     let taskFilter = null;
@@ -333,7 +333,8 @@ export class HoursDB extends Dexie {
   }
 
   // setActiveTask sets given task active and stops any previous tasks and
-  // automatically places the stopped task into history
+  // automatically places the stopped task into history.
+  // Resolves with the new active task.
   public setActiveTask(taskId: number): Promise<IActiveTask> {
     let nextTask: ITask;
     let prevTask: IActiveTask;

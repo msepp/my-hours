@@ -41,7 +41,7 @@ import { ConfirmDeleteComponent } from './confirm-delete/confirm-delete.componen
     BrowserModule,
     BrowserAnimationsModule,
     ReactiveFormsModule,
-    ServiceWorkerModule.register('/my-hours/ngsw-worker.js', { enabled: environment.production }),
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
     NgxsModule.forRoot([HoursStore]),
     AppRoutingModule,
     AppMaterialModule,
