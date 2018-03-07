@@ -1,0 +1,23 @@
+{
+    "name": "My Hours time tracker",
+    "short_name": "My Hours",
+    "description": "Personal time usage tracking",
+    "start_url": "/my-hours/index.html",
+    "lang": "en-US",
+    "icons": [
+        {
+            "src": "/my-hours/assets/favicons/android-chrome-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "/my-hours/assets/favicons/android-chrome-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "theme_color": "#006064",
+    "background_color": "#303030",
+    "display": "standalone",
+    "orientation": "portrait-primary"
+}

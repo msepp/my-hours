@@ -1,0 +1,13 @@
+@media only screen and (max-width: 767px) {
+  mat-form-field {
+    width: 100%;
+  }
+
+  .app-date-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: flex-end;
+    align-content: center;
+  }
+}

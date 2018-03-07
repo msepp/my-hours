@@ -1,0 +1,76 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: calc(100vh - 56px);
+  flex: 1;
+}
+
+.app-no-results {
+  background: inherit;
+}
+
+.app-active-task-no-results {
+  padding: 0 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.app-active-task-no-results-button {
+  margin-top: 0;
+}
+
+.app-active-task-active {
+  display: flex;
+  border-style: solid;
+  border-width: 1px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  box-sizing: border-box;
+  border-radius: 50%;
+  width: calc(100vw - 2rem);
+  height: calc(100vw - 2rem);
+  max-width: 480px;
+  max-height: 480px;
+  min-width: 280px;
+  min-height: 280px;
+}
+
+.app-active-task-name {
+  padding: 0 1rem;
+  text-align: center;
+  white-space: pre;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.app-active-task-stop, .app-active-task-start {
+  margin-top: 14px;
+}
+
+.app-active-task-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@media only screen and (orientation: landscape) {
+  :host {
+    flex-direction: row;
+    align-items: center;
+    align-content: center;
+    justify-content: center;
+  }
+
+  .app-active-task-active {
+    padding: 0 2rem;
+    width: calc(50vw - 4rem);
+    height: calc(50vw - 4rem);
+  }
+}

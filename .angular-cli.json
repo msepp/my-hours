@@ -8,8 +8,9 @@
       "root": "src",
       "outDir": "dist",
       "assets": [
+        "site.webmanifest",
         "assets",
-        "favicon.ico"
+        "favicon.png"
       ],
       "index": "index.html",
       "main": "main.ts",

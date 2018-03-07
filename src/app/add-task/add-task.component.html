@@ -1,0 +1,24 @@
+<h2 mat-dialog-title>Add task</h2>
+<mat-dialog-content>
+  <form [formGroup]="addTaskForm">
+    <mat-form-field>
+      <input matInput type="text" placeholder="Task name" formControlName="name" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select placeholder="Task color" formControlName="color">
+        <mat-option *ngFor="let opt of colorOptions" [value]="opt.value">
+          <app-color-tag color="{{opt.value}}" label="&nbsp;"></app-color-tag> {{opt.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select placeholder="Task groups" formControlName="groups" multiple="true">
+        <mat-option *ngFor="let opt of data.groups" [value]="opt.id">{{opt.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button (click)="addAndClose()" [disabled]="addTaskForm.invalid">Add</button>
+</mat-dialog-actions>

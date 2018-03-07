@@ -1,0 +1,21 @@
+@import '~@angular/material/theming';
+@mixin active-task-theme($theme, $typography) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  .app-active-task-active {
+    border-color: mat-color($foreground, divider);
+  }
+
+  .app-active-task-no-task-active {
+    @include mat-typography-level-to-styles($typography, title);
+    text-align: center;
+  }
+
+  .app-active-task-name {
+    @include mat-typography-level-to-styles($typography, display-2);
+  }
+  .app-active-task-duration {
+    @include mat-typography-level-to-styles($typography, display-1);
+  }
+}

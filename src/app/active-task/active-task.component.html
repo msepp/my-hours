@@ -1,0 +1,30 @@
+<div class="app-active-task-no-results" *ngIf="tasks.allIds.length === 0">
+  <div class="app-no-results">
+    <p class="app-no-results-title">No tasks defined</p>
+    <p class="app-active-task-no-results-button">
+      <button mat-raised-button color="primary" [routerLink]="['/tasks', {popup: true}]">Start by defining a task</button>
+    </p>
+  </div>
+</div>
+
+<div class="app-active-task-active" *ngIf="tasks.allIds.length > 0">
+  <div *ngIf="activeTask.id > 0;then taskActive else noTaskActive"></div>
+  <ng-template #taskActive>
+    <div class="app-active-task-name">{{tasks.byId[activeTask.id].name}}</div>
+    <div class="app-active-task-duration">{{duration}}</div>
+    <button class="app-active-task-stop" mat-fab color="warn" (click)="stopTask()" aria-label="stop task"><mat-icon>stop</mat-icon></button>
+  </ng-template>
+  <ng-template #noTaskActive>
+    <form [formGroup]="startForm" (submit)="startTask()" class="app-active-task-form">
+      <mat-form-field>
+        <input type="text" placeholder="Select task" aria-label="Task" matInput formControlName="task" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+          <mat-option *ngFor="let task of filteredTasks|async" [value]="task">
+            {{ task.name }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+      <button class="app-active-task-start" type="submit" mat-fab color="primary" [disabled]="startForm.invalid"><mat-icon>play_arrow</mat-icon></button>
+    </form>
+  </ng-template>
+</div>

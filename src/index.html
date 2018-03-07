@@ -3,12 +3,61 @@
 <head>
   <meta charset="utf-8">
   <title>MyHours</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" />
   <base href="/">
 
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
+  <link rel="manifest" href="site.webmanifest">
+  <link rel="mask-icon" href="assets/favicons/safari-pinned-tab.svg" color="#5bbad5">
+  <link rel="shortcut icon" href="assets/favicons/favicon.ico">
+  <meta name="msapplication-TileColor" content="#2b5797">
+  <meta name="msapplication-config" content="assets/favicons/browserconfig.xml">
+  <meta name="theme-color" content="#006064">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <style type="text/css">
+    body {
+      background: #303030;
+    }
+
+    #app-splash {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      align-content: center;
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 9999;
+      background-color: #303030;
+      color: #fff;
+    }
+
+    #app-splash .logo {
+      background: transparent url('assets/favicons/android-chrome-192x192.png') center;
+      background-repeat: no-repeat;
+      height: 192px;
+      width: 192px;
+      margin: 2rem 0;
+    }
+    #app-splash .loader {
+      background: transparent url('assets/ajax-loader.gif') center;
+      background-repeat: no-repeat;
+      height: 32px;
+      width: 32px;
+    }
+  </style>
 </head>
 <body>
   <app-root></app-root>
+  <div id="app-splash">
+    <div class="logo"></div>
+    <div class="loader"></div>
+  </div>
 </body>
 </html>

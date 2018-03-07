@@ -1,0 +1,47 @@
+<div *ngIf="tasks.length == 0; then noTasks else tasksList"></div>
+<ng-template #noTasks>
+  <div class="app-no-results">
+    <p class="app-no-results-title">No tasks defined.</p>
+  </div>
+</ng-template>
+
+<ng-template #tasksList>
+  <mat-accordion multi="false">
+    <mat-expansion-panel *ngFor="let task of tasks;trackBy:trackTaskById" (opened)="setupForm(task)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{task.name}}
+        </mat-panel-title>
+        <mat-panel-description>
+          <app-color-tag [color]="task.settings.color" label="&nbsp;"></app-color-tag>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <form [formGroup]="updateTaskForm">
+          <mat-form-field>
+            <input matInput type="text" placeholder="Task name" formControlName="name" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-select placeholder="Task color" formControlName="color">
+              <mat-option *ngFor="let opt of colorOptions" [value]="opt.value">
+                <app-color-tag color="{{opt.value}}" label="&nbsp;"></app-color-tag> {{opt.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-select placeholder="Task groups" formControlName="groups" multiple="true">
+              <mat-option *ngFor="let gid of groups.allIds" [value]="gid">{{groups.byId[gid].name}}</mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+        <mat-action-row>
+          <button mat-raised-button color="warn" (click)="deleteTask(task)">Delete</button>
+        </mat-action-row>
+      </ng-template>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-template>
+
+<button class="app-add-task-button" mat-fab arial-label="Add task" (click)="addTask()">
+  <mat-icon>add</mat-icon>
+</button>

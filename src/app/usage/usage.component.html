@@ -1,0 +1,64 @@
+<mat-expansion-panel #optionsPanel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Report
+    </mat-panel-title>
+    <mat-panel-description>
+      {{prettyStart}} - {{prettyEnd}}
+    </mat-panel-description>
+  </mat-expansion-panel-header>
+
+  <form [formGroup]="reportForm" class="app-date-form">
+    <mat-form-field>
+      <input matInput [matDatepicker]="startDatePicker" placeholder="Choose start date" formControlName="start">
+      <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker [touchUi]="mobileQuery.matches" #startDatePicker disabled="false"></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput [matDatepicker]="endDatePicker" placeholder="Choose end date" formControlName="end">
+      <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+      <mat-datepicker [touchUi]="mobileQuery.matches" #endDatePicker disabled="false"></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select multiple="true" formControlName="groups" placeholder="Groups">
+        <mat-option *ngFor="let gid of groups.allIds" [value]="gid">{{groups.byId[gid].name}}</mat-option>
+      </mat-select>
+      <mat-hint>Leave empty for all</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select multiple="true" formControlName="tasks" placeholder="Tasks">
+        <mat-option *ngFor="let tid of tasks.allIds" [value]="tid">{{tasks.byId[tid].name}}</mat-option>
+      </mat-select>
+      <mat-hint>Leave empty for all</mat-hint>
+    </mat-form-field>
+    <button mat-raised-button color="primary" (click)="generateReport()" [disabled]="reportForm.invalid">Generate</button>
+  </form>
+</mat-expansion-panel>
+
+<div class="app-report-container">
+  <div class="app-report mat-table" #reportTable>
+  <div *ngIf="report.tasks.length === 0; then noResults else resultTable"></div>
+  <ng-template #resultTable>
+    <div class="mat-header-row">
+      <div class="app-report-task mat-header-cell">Task</div>
+      <div class="app-report-day mat-header-cell" *ngFor="let d of report.days">{{d.day}}</div>
+      <div class="app-report-total mat-header-cell">Task total</div>
+    </div>
+
+    <div class="mat-row" *ngFor="let t of report.tasks">
+      <div class="app-report-task mat-cell"><span [class]="'text-' + t.color">{{t.name}}</span></div>
+      <div class="app-report-day mat-cell" *ngFor="let d of report.days">{{d.tasks[t.id]|duration}}</div>
+      <div class="app-report-total mat-cell">{{t.total|duration}}</div>
+    </div>
+
+    <div class="mat-row mat-footer-row">
+      <div class="app-report-task mat-cell mat-footer-cell">Day total</div>
+      <div class="app-report-day mat-cell mat-footer-cell" *ngFor="let d of report.days">{{d.total|duration}}</div>
+      <div class="app-report-total mat-cell mat-footer-cell">{{report.total|duration}}</div>
+    </div>
+  </ng-template>
+  <ng-template #noResults>
+    <p class="app-report-no-results-title">No results for query</p>
+  </ng-template>
+  </div>
+</div>

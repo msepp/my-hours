@@ -1,0 +1,64 @@
+@import '~@angular/material/theming';
+@mixin usage-theme($theme, $typography) {
+  $primary: map-get($theme, primary);
+  $foreground: map-get($theme, foreground);
+  $background: map-get($theme, background);
+
+  .app-report-no-results-title {
+    @include mat-typography-level-to-styles($typography, title);
+    text-align: center;
+  }
+
+  .mat-table {
+    display: block;
+    overflow-x: scroll;
+  }
+
+  .mat-row,
+  .mat-header-row {
+    display: flex;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    align-items: center;
+    min-height: 48px;
+    padding: 0 24px;
+
+    &:hover {
+      background-color: mat-color($background, hover);
+    }
+  }
+
+  .mat-cell,
+  .mat-header-cell {
+    flex: 1;
+    overflow: hidden;
+    word-wrap: break-word;
+  }
+
+  .mat-footer-row {
+    background-color: mat-color($primary, 900);
+    color: mat-contrast($primary, 900);
+  }
+  .mat-footer-cell {
+    @include mat-typography-level-to-styles($typography, caption);
+    font-weight: 700;
+  }
+
+  .app-report {
+    @include mat-table-theme($theme);
+    @include mat-table-typography($typography);
+  }
+
+  .app-report-task {
+    text-align: left;
+  }
+
+  .app-report-day {
+    text-align: right;
+  }
+
+  .app-report-total {
+    text-align: right;
+    font-weight: 700;
+  }
+}

@@ -1,0 +1,15 @@
+export const colorOptions = [
+  {value: 'color-default', name: 'Default'},
+  {value: 'color-primary-1', name: 'Primary 1'},
+  {value: 'color-primary-2', name: 'Primary 2'},
+  {value: 'color-primary-3', name: 'Primary 3'},
+  {value: 'color-primary-4', name: 'Primary 4'},
+  {value: 'color-accent-1', name: 'Alternate 1'},
+  {value: 'color-accent-2', name: 'Alternate 2'},
+  {value: 'color-accent-3', name: 'Alternate 3'},
+  {value: 'color-accent-4', name: 'Alternate 4'},
+  {value: 'color-warn-1', name: 'Warning 1'},
+  {value: 'color-warn-2', name: 'Warning 2'},
+  {value: 'color-warn-3', name: 'Warning 3'},
+  {value: 'color-warn-4', name: 'Warning 4'},
+];

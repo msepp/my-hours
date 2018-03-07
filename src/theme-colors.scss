@@ -1,0 +1,110 @@
+@import '~@angular/material/theming';
+@mixin app-theme-colors($theme) {
+  $grey: mat-palette($mat-grey);
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+
+  .color-deleted {
+    background: mat-color($grey, 400);
+    color: mat-contrast($grey, 400);
+  }
+  .color-default {
+    background: mat-color($primary, 400);
+    color: mat-contrast($primary, 400);
+  }
+
+  .color-primary-1 {
+    background: mat-color($primary, A100);
+    color: mat-contrast($primary, A100);
+  }
+  .color-primary-2 {
+    background: mat-color($primary, A200);
+    color: mat-contrast($primary, A200);
+  }
+  .color-primary-3 {
+    background: mat-color($primary, A400);
+    color: mat-contrast($primary, A400);
+  }
+  .color-primary-4 {
+    background: mat-color($primary, A700);
+    color: mat-contrast($primary, A700);
+  }
+
+  .color-accent-1 {
+    background: mat-color($accent, A100);
+    color: mat-contrast($accent, A100);
+  }
+  .color-accent-2 {
+    background: mat-color($accent, A200);
+    color: mat-contrast($accent, A200);
+  }
+  .color-accent-3 {
+    background: mat-color($accent, A400);
+    color: mat-contrast($accent, A400);
+  }
+  .color-accent-4 {
+    background: mat-color($accent, A700);
+    color: mat-contrast($accent, A700);
+  }
+
+  .color-warn-1 {
+    background: mat-color($warn, A100);
+    color: mat-contrast($warn, A100);
+  }
+  .color-warn-2 {
+    background: mat-color($warn, A200);
+    color: mat-contrast($warn, A200);
+  }
+  .color-warn-3 {
+    background: mat-color($warn, A400);
+    color: mat-contrast($warn, A400);
+  }
+  .color-warn-4 {
+    background: mat-color($warn, A700);
+    color: mat-contrast($warn, A700);
+  }
+
+  .text-color-deleted {
+    color: mat-color($grey, 400);
+  }
+  .text-color-default {
+    color: mat-color($primary, 400);
+  }
+  .text-color-primary-1 {
+    color: mat-color($primary, A100);
+  }
+  .text-color-primary-2 {
+    color: mat-color($primary, A200);
+  }
+  .text-color-primary-3 {
+    color: mat-color($primary, A400);
+  }
+  .text-color-primary-4 {
+    color: mat-color($primary, A700);;
+  }
+  .text-color-accent-1 {
+    color: mat-color($accent, A100);
+  }
+  .text-color-accent-2 {
+    color: mat-color($accent, A200);
+  }
+  .text-color-accent-3 {
+    color: mat-color($accent, A400);
+  }
+  .text-color-accent-4 {
+    color: mat-color($accent, A700);
+  }
+  .text-color-warn-1 {
+    color: mat-color($warn, A100);
+  }
+  .text-color-warn-2 {
+    color: mat-color($warn, A200);
+  }
+  .text-color-warn-3 {
+    color: mat-color($warn, A400);
+  }
+  .text-color-warn-4 {
+    color: mat-color($warn, A700);
+  }
+}

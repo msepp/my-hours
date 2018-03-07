@@ -1,0 +1,24 @@
+// Import all the tools needed to customize the theme and extract parts of it
+@import '~@angular/material/theming';
+
+// Define a mixin that accepts a theme and outputs the color styles for the component.
+@mixin app-global-styles($theme, $typography) {
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  .app-no-results {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    background: mat-color($background, card);
+    color: mat-color($foreground, text);
+  }
+
+  .app-no-results-title {
+    @include mat-typography-level-to-styles($typography, title);
+    text-align: center;
+  }
+}

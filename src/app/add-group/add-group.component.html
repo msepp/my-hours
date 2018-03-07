@@ -1,0 +1,17 @@
+<h2 mat-dialog-title>Add group</h2>
+<mat-dialog-content>
+  <form [formGroup]="addGroupForm">
+    <mat-form-field>
+      <input matInput type="text" placeholder="Group name" formControlName="name" />
+    </mat-form-field>
+    <mat-form-field>
+      <mat-select placeholder="Group color" formControlName="color">
+        <mat-option *ngFor="let opt of colorOptions" [value]="opt.value">{{opt.name}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button (click)="addAndClose()" [disabled]="addGroupForm.invalid">Add</button>
+</mat-dialog-actions>

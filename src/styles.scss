@@ -1,1 +1,33 @@
-/* You can add global styles to this file, and also import other style files */
+@import '~@angular/material/theming';
+@import '~material-design-icons/iconfont/material-icons.css';
+
+@include mat-core();
+$hours-primary: mat-palette($mat-cyan);
+$hours-accent:  mat-palette($mat-lime, A200, A100, A400);
+$hours-theme:   mat-dark-theme($hours-primary, $hours-accent);
+@include angular-material-theme($hours-theme);
+
+$typography: mat-typography-config();
+
+@import 'theme-colors';
+@include app-theme-colors($hours-theme);
+
+@import 'styles-global';
+@include app-global-styles($hours-theme, $typography);
+
+@import 'app/groups/groups.component-theme';
+@include groups-theme($hours-theme, $typography);
+
+@import 'app/tasks/tasks.component-theme';
+@include tasks-theme($hours-theme, $typography);
+
+@import 'app/color-tag/color-tag.component-theme';
+@include color-tag-theme($hours-theme, $typography);
+
+@import 'app/active-task/active-task.component-theme';
+@include active-task-theme($hours-theme, $typography);
+
+@import 'app/usage/usage.component-theme';
+@include usage-theme($hours-theme, $typography);
+
+@import 'responsive';

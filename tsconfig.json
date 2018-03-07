@@ -2,6 +2,12 @@
   "compileOnSave": false,
   "compilerOptions": {
     "outDir": "./dist/out-tsc",
+    "baseUrl": "src",
+    "paths": {
+      "@web-workers/*": ["web-workers/*"],
+      "@store/*": ["app/store/*"],
+      "@services/*": ["app/services/*"]
+    },
     "sourceMap": true,
     "declaration": false,
     "moduleResolution": "node",

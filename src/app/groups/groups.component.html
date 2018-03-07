@@ -1,0 +1,42 @@
+<div *ngIf="groups.length == 0; then noGroups else groupsList"></div>
+<ng-template #noGroups>
+  <div class="app-no-results">
+    <p class="app-no-results-title">No groups defined.</p>
+  </div>
+</ng-template>
+
+<ng-template #groupsList>
+  <mat-accordion multi="false">
+    <mat-expansion-panel *ngFor="let grp of groups;trackBy:trackGroupById" (opened)="setupForm(grp)">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{grp.name}}
+        </mat-panel-title>
+        <mat-panel-description>
+          <app-color-tag [color]="grp.settings.color" label="&nbsp;"></app-color-tag>
+        </mat-panel-description>
+      </mat-expansion-panel-header>
+      <ng-template matExpansionPanelContent>
+        <form [formGroup]="updateGroupForm">
+          <mat-form-field>
+            <input matInput type="text" placeholder="Group name" formControlName="name" />
+          </mat-form-field>
+          <mat-form-field>
+            <mat-select placeholder="Group color" formControlName="color">
+              <mat-option *ngFor="let opt of colorOptions" [value]="opt.value">
+                <app-color-tag color="{{opt.value}}" label="&nbsp;"></app-color-tag> {{opt.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </form>
+        <mat-action-row>
+          <button mat-raised-button color="warn" (click)="deleteGroup(grp)">Delete</button>
+        </mat-action-row>
+      </ng-template>
+    </mat-expansion-panel>
+  </mat-accordion>
+</ng-template>
+
+<button class="app-add-group-button" mat-fab arial-label="Add group" (click)="addGroup()">
+  <mat-icon>add</mat-icon>
+</button>

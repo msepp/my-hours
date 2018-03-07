@@ -1,17 +1,49 @@
 {
   "index": "/index.html",
+  "routing": {
+    "index": "/index.html",
+    "routes": {
+      "/": {
+        "prefix": false
+      },
+      "/active-task": {
+        "prefix": true
+      },
+      "/groups": {
+        "prefix": true
+      },
+      "/tasks": {
+        "prefix": true
+      },
+      "/usage": {
+        "prefix": true
+      }
+    }
+  },
   "assetGroups": [{
     "name": "app",
     "installMode": "prefetch",
     "resources": {
       "files": [
-        "/favicon.ico",
-        "/index.html"
+        "/favicon.png",
+        "/site.webmanifest",
+        "/index.html",
+        "/assets/favicons/android-chrome-192x192.png",
+        "/assets/favicons/android-chrome-512x512.png",
+        "/assets/favicons/apple-touch-icon.png",
+        "/assets/favicons/browserconfig.xml",
+        "/assets/favicons/favicon-16x16.png",
+        "/assets/favicons/favicon-32x32.png",
+        "/assets/favicons/favicon.ico",
+        "/assets/favicons/mstile-150x150.png",
+        "/assets/favicons/safari-pinned-tab.svg"
       ],
       "versionedFiles": [
         "/*.bundle.css",
         "/*.bundle.js",
-        "/*.chunk.js"
+        "/*.worker.js",
+        "/*.chunk.js",
+        "/MaterialIcons-Regular.*.woff2"
       ]
     }
   }, {
@@ -21,6 +53,10 @@
     "resources": {
       "files": [
         "/assets/**"
+      ],
+      "urls": [
+        "https://fonts.googleapis.com/**",
+        "https://fonts.gstatic.com/s/roboto/**"
       ]
     }
   }]
