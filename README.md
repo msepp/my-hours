@@ -1,27 +1,24 @@
 # MyHours
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.1.
+A small PWA for tracking time used.
 
-## Development server
+## Features
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+* Service worker for offline use
+* Site manifest for adding to home screen on Androids
+* Easy task switching
+* Tasks can be assigned to groups
+* Report generation with filtering based on groups/tasks
+* Completely local: uses indexeddb for storage (requires no login)
+ * **caveat**: database can't be transferred between devices at the moment.
 
-## Code scaffolding
+## Demo
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+A demo can be viewed at (https://msepp.net/my-hours/index.html)
 
-## Build
+## About
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+* Uses [Dexie.js](http://dexie.org/) to interact with IndexedDB.
+* Uses [Moment.js](https://momentjs.com/) and [Luxon](https://moment.github.io/luxon/) for manipulating dates & time.
+* Uses [Angular Material](https://material.angular.io/) to provide a pretty GUI.
+* This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.1.
