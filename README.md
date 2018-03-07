@@ -9,8 +9,9 @@ A small PWA for tracking time used.
 * Easy task switching
 * Tasks can be assigned to groups
 * Report generation with filtering based on groups/tasks
-* Completely local: uses indexeddb for storage (requires no login)
- * **caveat**: database can't be transferred between devices at the moment.
+* Completely local: uses IndexedDB for storage (requires no login)
+  * Database work is offloaded to a web worker
+  * **caveat**: database can't be transferred between devices at the moment.
 
 ## Demo
 
