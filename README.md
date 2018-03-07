@@ -21,5 +21,6 @@ A demo can be viewed at (https://msepp.net/my-hours/index.html)
 
 * Uses [Dexie.js](http://dexie.org/) to interact with IndexedDB.
 * Uses [Moment.js](https://momentjs.com/) and [Luxon](https://moment.github.io/luxon/) for manipulating dates & time.
+* Uses [NGXS](https://github.com/amcdnl/ngxs) for state management.
 * Uses [Angular Material](https://material.angular.io/) to provide a pretty GUI.
 * This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.1.
