@@ -12,7 +12,6 @@
 
 .app-report-notes {
   width: 100%;
-  min-width: 800px;
 }
 
 .app-report-started-date, .app-report-started-time {
@@ -23,7 +22,8 @@
 }
 .app-report-note-task {
   max-width: 120px;
-  text-overflow: ellipsis;
-  overflow: hidden;
+}
+
+.nowrap {
   white-space: nowrap;
 }

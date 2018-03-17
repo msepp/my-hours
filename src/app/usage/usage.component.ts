@@ -29,6 +29,7 @@ export class UsageComponent implements OnInit, OnDestroy {
   // Public properties
   @ViewChild('optionsPanel') optionsPanel: MatExpansionPanel;
   @ViewChild('reportTable') elReportTable: ElementRef;
+  @ViewChild('notesTable') elNotesTable: ElementRef;
   public mobileQuery: MediaQueryList;
   public tasks: Store.TasksState;
   public groups: Store.GroupsState;
@@ -113,11 +114,12 @@ export class UsageComponent implements OnInit, OnDestroy {
     this.wws.report(opts).then(report => {
       if (report.tasks.length === 0) {
         this.elReportTable.nativeElement.style.minWidth = 'auto';
+        this.elNotesTable.nativeElement.style.minWidth = 'auto';
         this.report = {tasks: [], days: [], total: 0, notes: []};
       } else {
         this.report.days = report.days;
         this.report.tasks = report.tasks.map(t => {
-          let name = `(deleted/id:${t.id})`;
+          let name = `deleted / id:${t.id}`;
           let color = 'color-deleted';
 
           if (this.tasks.byId[t.id]) {
@@ -129,7 +131,7 @@ export class UsageComponent implements OnInit, OnDestroy {
         });
 
         this.report.notes = report.notes.map(n => {
-          let taskName = `(deleted/id:${n.taskId})`;
+          let taskName = `deleted / id:${n.taskId}`;
           let taskColor = 'color-deleted';
 
           if (this.tasks.byId[n.taskId]) {
@@ -141,6 +143,7 @@ export class UsageComponent implements OnInit, OnDestroy {
         });
 
         this.report.total = report.total;
+        this.elNotesTable.nativeElement.style.minWidth = `${this.report.notes.length ? 800 : 0}px`;
         this.elReportTable.nativeElement.style.minWidth = `${(report.days.length + 2) * 100}px`;
       }
 

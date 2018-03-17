@@ -17,6 +17,9 @@
       },
       "/usage": {
         "prefix": true
+      },
+      "/about": {
+        "prefix": true
       }
     }
   },
