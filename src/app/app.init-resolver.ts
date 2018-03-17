@@ -33,7 +33,10 @@ export class AppInitResolver implements Resolve<boolean> {
       this._log('read tasks, reading active tasks...');
       return this.ngxs.dispatch(new Store.ReadActiveTask()).toPromise();
     }).then(() => {
-      this._log('read active task, waiting for store to resolve...');
+      this._log('read active task, reading latest task...');
+      return this.ngxs.dispatch(new Store.ReadLatestTask()).toPromise();
+    }).then(() => {
+      this._log('read latest task, waiting for store to resolve...');
       return this.ngxs.dispatch(new Store.InitReady()).toPromise();
     });
 

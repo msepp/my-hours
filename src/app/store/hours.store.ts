@@ -15,7 +15,8 @@ import {
   UpdateGroup,
   UpdateTask,
   StartTask,
-  StopTask
+  StopTask,
+  ReadLatestTask
 } from './hours.actions';
 
 import {
@@ -29,7 +30,8 @@ import {
   StartTaskSuccess,
   StopTaskSuccess,
   UpdateGroupSuccess,
-  UpdateTaskSuccess
+  UpdateTaskSuccess,
+  ReadLatestTaskSuccess
 } from './hours.events';
 
 import { ITask, IGroup } from '@web-workers/db/db.schema';
@@ -54,6 +56,7 @@ export interface HoursState {
   initialized: boolean;
   loading: boolean;
   activeTask: ActiveTaskState;
+  latestTask: number;
   groups: GroupsState;
   tasks: TasksState;
 }
@@ -64,6 +67,7 @@ export interface HoursState {
     intialized: false,
     loading: false,
     activeTask: {id: 0},
+    latestTask: 0,
     tasks: {
       byId: {},
       allIds: [],
@@ -213,6 +217,16 @@ export class HoursStore {
     }
   }
 
+  @Mutation(ReadLatestTaskSuccess)
+  readLatestTaskSuccess(state: HoursState, e: ReadLatestTaskSuccess) {
+    this._log('read latest task', e, state);
+    if (e.payload) {
+      state.latestTask = e.payload;
+    } else {
+      state.latestTask = 0;
+    }
+  }
+
   @Mutation(RefreshTasksSuccess)
   refreshTasksSuccess(state: HoursState, e: RefreshTasksSuccess) {
     this._log('settings tasks:', e.payload, state);
@@ -276,6 +290,13 @@ export class HoursStore {
     );
   }
 
+  @Action(ReadLatestTask)
+  readLatestTask(state: HoursState) {
+    return fromPromise(this.wws.getLatestTask()).pipe(
+      map(active => new ReadLatestTaskSuccess(active))
+    );
+  }
+
   @Action(RefreshTasks)
   refreshTasks(state: HoursState) {
     return fromPromise(this.wws.readTasks()).pipe(
@@ -286,13 +307,16 @@ export class HoursStore {
   @Action(StartTask)
   startTask(state: HoursState, a: StartTask) {
     return fromPromise(this.wws.startTask(a.task)).pipe(
-      map(active => new StartTaskSuccess(active))
+      map(active => [
+        new StartTaskSuccess(active),
+        new ReadLatestTaskSuccess(active.taskId)
+      ])
     );
   }
 
   @Action(StopTask)
-  stopTask(state: HoursState) {
-    return fromPromise(this.wws.stopTask()).pipe(
+  stopTask(state: HoursState, a: StopTask) {
+    return fromPromise(this.wws.stopTask(a.task)).pipe(
       map(() => new StopTaskSuccess())
     );
   }

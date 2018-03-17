@@ -59,20 +59,13 @@ export class TasksComponent implements OnInit, OnDestroy {
       }
     });
 
-    this._groups$ = this.ngxs.select(state => state.groups).subscribe(
-      groups => this.groups = groups
-    );
-    this._tasks$ = this.ngxs.select(state => state.tasks).subscribe(
-      tasks => this.tasks = tasks
-    );
-
     this._groups$ = this.ngxs.select((state: Store.StoreState) => state.hours.groups).subscribe(
       (groups: Store.GroupsState) => {
         this.groups = groups;
       }
     );
 
-    this._groups$ = this.ngxs.select((state: Store.StoreState) => state.hours.tasks).subscribe(
+    this._tasks$ = this.ngxs.select((state: Store.StoreState) => state.hours.tasks).subscribe(
       (tasks: Store.TasksState) => this.tasks = tasks.allIds.map(id => tasks.byId[id])
     );
 

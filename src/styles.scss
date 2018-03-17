@@ -15,6 +15,12 @@ $typography: mat-typography-config();
 @import 'styles-global';
 @include app-global-styles($hours-theme, $typography);
 
+@import 'app/about/about.component-theme';
+@include about-theme($hours-theme, $typography);
+
+@import 'app/confirm-delete/confirm-delete.component-theme';
+@include confirm-delete-theme($hours-theme, $typography);
+
 @import 'app/groups/groups.component-theme';
 @include groups-theme($hours-theme, $typography);
 
@@ -29,5 +35,8 @@ $typography: mat-typography-config();
 
 @import 'app/usage/usage.component-theme';
 @include usage-theme($hours-theme, $typography);
+
+@import 'app/stop-task/stop-task.component-theme';
+@include stop-task-theme($hours-theme, $typography);
 
 @import 'responsive';

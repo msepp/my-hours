@@ -1,0 +1,44 @@
+<h2 mat-dialog-title>Stop work</h2>
+<mat-dialog-content>
+  <form [formGroup]="stopTaskForm">
+    <div class="form-row-flex">
+      <mat-form-field>
+        <mat-select placeholder="Task" formControlName="taskId" multiple="false">
+          <mat-option *ngFor="let opt of data.tasks" [value]="opt.id">{{opt.name}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <div class="form-row-flex">
+      <mat-form-field>
+        <input matInput [matDatepicker]="startDatePicker" placeholder="Start date" formControlName="start">
+        <mat-datepicker-toggle matSuffix [for]="startDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker [touchUi]="mobileQuery.matches" #startDatePicker disabled="false"></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="time" placeholder="Start time" formControlName="startTime">
+      </mat-form-field>
+    </div>
+    <div class="form-row-flex">
+      <mat-form-field>
+        <input matInput [matDatepicker]="endDatePicker" placeholder="End date" formControlName="end">
+        <mat-datepicker-toggle matSuffix [for]="endDatePicker"></mat-datepicker-toggle>
+        <mat-datepicker [touchUi]="mobileQuery.matches" #endDatePicker disabled="false"></mat-datepicker>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput type="time" placeholder="End time" formControlName="endTime">
+      </mat-form-field>
+    </div>
+    <div class="error" *ngIf="stopTaskForm.hasError('datesInvalid')">
+      Start must be before end!
+    </div>
+    <div class="form-row-flex">
+      <mat-form-field>
+        <textarea matInput matTextareaAutosize placeholder="Notes" formControlName="notes"></textarea>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button mat-raised-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" (click)="stopAndClose()" [disabled]="stopTaskForm.invalid">Stop</button>
+</mat-dialog-actions>

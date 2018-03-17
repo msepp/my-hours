@@ -9,3 +9,21 @@
   // Scroll table content
   overflow: auto;
 }
+
+.app-report-notes {
+  width: 100%;
+  min-width: 800px;
+}
+
+.app-report-started-date, .app-report-started-time {
+  max-width: 100px;
+}
+.app-report-duration {
+  max-width: 100px;
+}
+.app-report-note-task {
+  max-width: 120px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}

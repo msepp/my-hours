@@ -18,11 +18,13 @@ import { AppComponent } from './app.component';
 import { ActiveTaskComponent } from './active-task/active-task.component';
 import { AddGroupComponent } from './add-group/add-group.component';
 import { AddTaskComponent } from './add-task/add-task.component';
+import { StopTaskComponent } from './stop-task/stop-task.component';
 import { ColorTagComponent } from './color-tag/color-tag.component';
 import { GroupsComponent } from './groups/groups.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { UsageComponent } from './usage/usage.component';
 import { ConfirmDeleteComponent } from './confirm-delete/confirm-delete.component';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
   declarations: [
@@ -36,6 +38,8 @@ import { ConfirmDeleteComponent } from './confirm-delete/confirm-delete.componen
     GroupsComponent,
     TasksComponent,
     UsageComponent,
+    StopTaskComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
@@ -53,6 +57,7 @@ import { ConfirmDeleteComponent } from './confirm-delete/confirm-delete.componen
   entryComponents: [
     AddGroupComponent,
     AddTaskComponent,
+    StopTaskComponent,
     ConfirmDeleteComponent
   ],
   bootstrap: [AppComponent]

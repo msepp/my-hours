@@ -7,7 +7,8 @@ export const DBName = 'Hours';
 
 // Enumeration of supported settings
 export enum Setting {
-  ActiveTask = 'ActiveTask'
+  ActiveTask = 'ActiveTask',
+  PreviousTask = 'PreviousTask'
 }
 
 // IGroupSettings defines the available configuration options for a group
@@ -47,12 +48,20 @@ export interface IWork {
   start: string;
   end: string;
   taskId: number;
+  note?: string;
 }
 
 // IActiveTask descrives current active task in settings
 export interface IActiveTask {
   taskId: number;
   started: string;
+}
+
+export interface IStopTask {
+  taskId?: number;
+  started?: string;
+  stopped?: string;
+  note?: string;
 }
 
 export interface IReportOptions {
@@ -73,13 +82,23 @@ export interface IReportDay {
   total: number;
 }
 
+export interface IReportNote {
+  taskId: number;
+  note: string;
+  started: string;
+  duration: number;
+}
+
 export interface IReport {
   days: IReportDay[];
   tasks: IReportTask[];
+  notes: IReportNote[];
   total: number;
 }
 
-export const TimestampFormat = 'YYYY-MM-DDTHH:mm:ss';
+export const DateFormat = 'YYYY-MM-DD';
+export const TimeFormat = 'HH:mm:ss';
+export const TimestampFormat = DateFormat + 'T' + TimeFormat;
 
 // Class version of IWork with some helpers
 export class Work implements IWork {
@@ -88,11 +107,13 @@ export class Work implements IWork {
   public start: string;
   public end: string;
   public taskId: number;
+  public note?: string;
 
   constructor(work: IWork) {
     Object.assign(this, work);
     this._start = new Date(this.start);
     this._end = new Date(this.end);
+    this.note = work.note;
   }
 
   get duration(): number {
@@ -125,7 +146,14 @@ export class HoursDB extends Dexie {
           const at: IActiveTask = {taskId: 0, started: ''};
           return this.settings.add({name: Setting.ActiveTask, value: at});
         }
-        return Promise.resolve(undefined);
+        return Promise.resolve(null);
+      }).then(() => {
+        return this.settings.get(Setting.PreviousTask);
+      }).then(s => {
+        if (s === undefined) {
+          return this.settings.add({name: Setting.PreviousTask, value: 0});
+        }
+        return Promise.resolve(null);
       });
     });
 
@@ -265,9 +293,9 @@ export class HoursDB extends Dexie {
       }).toArray();
 
     }).then((result: IWork[]) => {
-      const report: IReport = {tasks: [], days: [], total: 0};
       const days: IReportDay[] = [];
       const tasks: IReportTask[] = [];
+      const notes: IReportNote[] = [];
       const taskIndex = {};
       let total = 0;
       let ddata: IReportDay;
@@ -306,14 +334,14 @@ export class HoursDB extends Dexie {
         ddata.tasks[w.taskId] = (ddata.tasks[w.taskId] || 0) + w.duration;
         tasks[taskIndex[w.taskId]].total += w.duration;
         total += w.duration;
+
+        // Add to notes if note is set.
+        if (w.note) {
+          notes.push({note: w.note, taskId: w.taskId, started: w.start, duration: w.duration});
+        }
       });
 
-      report.days = days;
-      report.tasks = tasks;
-      report.total = total;
-
-      this._log('returning report', report);
-      return report;
+      return { days, tasks, total, notes };
     });
   }
 
@@ -337,7 +365,6 @@ export class HoursDB extends Dexie {
   // Resolves with the new active task.
   public setActiveTask(taskId: number): Promise<IActiveTask> {
     let nextTask: ITask;
-    let prevTask: IActiveTask;
     const now = new Date().toISOString().replace(/\.[0-9]+Z$/, 'Z');
 
     return this.transaction('rw', this.settings, this.history, this.tasks, () => {
@@ -349,33 +376,83 @@ export class HoursDB extends Dexie {
           return this.settings.get(Setting.ActiveTask);
         }
       }).then((s: ISetting) => {
-        if (s !== undefined) {
-          prevTask = s.value;
-          this._log(`prev: ${prevTask.taskId} (started: ${prevTask.started})`);
+        if (s !== undefined && s.value.taskId !== 0) {
+          this._log(`task already active: ${s.value.taskId}`);
+          return Promise.reject(new Error('task active'));
         }
 
         // Set active task to given value.
+        return this.settings.update(Setting.PreviousTask, {value: taskId});
+      }).then(() => {
         return this.settings.update(Setting.ActiveTask, {
           value: {taskId, started: now}
         });
       }).then((ok) => {
-        this._log('was settings update ok? ', ok);
-        // Only add to history if previous task was something else than 0.
-        if (!prevTask || prevTask.taskId === 0) {
-          return Promise.resolve(0);
-        } else {
-          this._log('adding to history...');
-          return this.history.add({
-            taskId: prevTask.taskId,
-            start: prevTask.started,
-            end: now
-          });
+        if (!ok) {
+          this._log(`updating active task failed!`);
+          return Promise.reject(new Error('setting active task failed'));
         }
-      }).then(() => {
         return this.settings.get(Setting.ActiveTask);
       }).then((s: ISetting) => {
         this._log('responding with:', s.value);
         return s.value;
+      });
+    });
+  }
+
+  // stopActiveTask stops the currently active task and records time spent to
+  // database.
+  public stopActiveTask(task: IStopTask): Promise<any> {
+    let end = new Date().toISOString().replace(/\.[0-9]+Z$/, 'Z');
+    let start: string;
+    let taskId: number;
+    const note: string = task.note;
+
+    return this.transaction('rw', this.settings, this.history, this.tasks, () => {
+      return this.settings.get(Setting.ActiveTask).then((s: ISetting) => {
+        if (s.value.taskId === 0) {
+          return Promise.reject(new Error('task not active'));
+        }
+        if (task.taskId && task.taskId !== s.value.taskId) {
+          return this.tasks.get(task.taskId).then(t => {
+            if (t === undefined) {
+              return Promise.reject(Dexie.NotFoundError);
+            }
+            return Promise.resolve({taskId: t.id, started: s.value.started});
+          });
+        }
+        return Promise.resolve(s.value);
+      }).then((at: IActiveTask) => {
+        if (task.stopped) {
+          try {
+            end = new Date(task.stopped).toISOString().replace(/\.[0-9]+Z$/, 'Z');
+          } catch (e) {
+            return Promise.reject(e);
+          }
+        }
+
+        if (task.started) {
+          try {
+            start = new Date(task.started).toISOString().replace(/\.[0-9]+Z$/, 'Z');
+          } catch (e) {
+            return Promise.reject(e);
+          }
+        } else {
+          start = at.started;
+        }
+
+        taskId = at.taskId;
+
+        // Set active task to given value.
+        return this.settings.update(Setting.ActiveTask, {
+          value: {taskId: 0, started: null}
+        });
+      }).then(ok => {
+        if (!ok) {
+          return Promise.reject(new Error('stopping task failed'));
+        }
+
+        return this.history.add({ taskId, start, end, note });
       });
     });
   }
@@ -405,6 +482,12 @@ export class HoursDB extends Dexie {
       }).then(g => {
         return g;
       });
+    });
+  }
+
+  public getLastestTask(): Promise<number> {
+    return this.settings.get(Setting.PreviousTask).then((s: ISetting) => {
+      return s ? s.value : 0;
     });
   }
 }

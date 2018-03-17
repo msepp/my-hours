@@ -1,4 +1,4 @@
-import { IGroup, ITask, IReportOptions } from './db.schema';
+import { IGroup, ITask, IReportOptions, IStopTask } from './db.schema';
 
 export enum DBMessageType {
   DeleteGroup = 'delete.group',
@@ -15,6 +15,7 @@ export enum DBMessageType {
   UpdateTask = 'update.task',
 
   CreateReport = 'create.report',
+  GetLatestTask = 'read.latesttask'
 }
 
 // UUID generator for messages
@@ -114,7 +115,7 @@ export class DBMessageStartTask extends DBIdableMessage implements IDBMessage {
 
 export class DBMessageStopTask extends DBIdableMessage implements IDBMessage {
   readonly type = DBMessageType.StopTask;
-  constructor() {
+  constructor(public task: IStopTask) {
     super();
   }
 }
@@ -133,6 +134,13 @@ export class DBMessageUpdateTask extends DBIdableMessage implements IDBMessage {
   }
 }
 
+export class DBMessageGetLatestTask extends DBIdableMessage implements IDBMessage {
+  readonly type = DBMessageType.GetLatestTask;
+  constructor() {
+    super();
+  }
+}
+
 // Union type of all DB worker message implementations
 export type DBMessage = DBMessageActiveTask |
                         DBMessageDeleteGroup |
@@ -145,4 +153,5 @@ export type DBMessage = DBMessageActiveTask |
                         DBMessageStartTask |
                         DBMessageStopTask |
                         DBMessageUpdateGroup |
-                        DBMessageUpdateTask;
+                        DBMessageUpdateTask |
+                        DBMessageGetLatestTask;

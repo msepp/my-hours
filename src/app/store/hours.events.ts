@@ -21,6 +21,10 @@ export class ReadActiveTaskSuccess {
   constructor(public payload: IActiveTask) {}
 }
 
+export class ReadLatestTaskSuccess {
+  constructor(public payload: number) {}
+}
+
 export class RefreshGroupsSuccess {
   constructor(public payload: IGroup[]) {}
 }

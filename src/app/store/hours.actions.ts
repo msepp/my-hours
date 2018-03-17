@@ -1,4 +1,4 @@
-import { ITask, IGroup, IActiveTask } from '@web-workers/db/db.schema';
+import { ITask, IGroup, IActiveTask, IStopTask } from '@web-workers/db/db.schema';
 
 export class DeleteGroup {
   constructor(public groupId: number) {}
@@ -27,12 +27,15 @@ export class RefreshTasks {
 
 export class ReadActiveTask {
 }
+export class ReadLatestTask {
+}
 
 export class StartTask {
   constructor(public task: ITask) {}
 }
 
 export class StopTask {
+  constructor(public task: IStopTask) {}
 }
 
 export class UpdateGroup {

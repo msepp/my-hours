@@ -55,6 +55,12 @@ onmessage = (event: WorkerEvent) => {
         .catch(e => replyTo(msg, {error: e}));
     break;
 
+    case Msg.DBMessageType.GetLatestTask:
+      db.getLastestTask()
+        .then(id => replyTo(msg, {data: id}))
+        .catch(e => replyTo(msg, {error: e}));
+    break;
+
     case Msg.DBMessageType.InsertGroup:
       db.insertGroup(msg.group)
         .then(newId => replyTo(msg, {data: newId}))
@@ -92,7 +98,7 @@ onmessage = (event: WorkerEvent) => {
     break;
 
     case Msg.DBMessageType.StopTask:
-      db.setActiveTask(0)
+      db.stopActiveTask(msg.task)
         .then(t => replyTo(msg, {data: t}))
         .catch(e => {
           replyTo(msg, {error: e.name});

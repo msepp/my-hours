@@ -12,6 +12,6 @@
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button (click)="addAndClose()" [disabled]="addGroupForm.invalid">Add</button>
+  <button mat-raised-button mat-dialog-close>Cancel</button>
+  <button mat-raised-button color="primary" (click)="addAndClose()" [disabled]="addGroupForm.invalid">Add</button>
 </mat-dialog-actions>

@@ -1,6 +1,7 @@
 import { environment } from 'environments/environment';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
 import { Subscription } from 'rxjs/Subscription';
 import { Observable } from 'rxjs/Observable';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
@@ -11,6 +12,8 @@ import { DateTime } from 'luxon';
 import * as Schema from '@web-workers/db/db.schema';
 import * as Store from '@store/.';
 
+import { StopTaskComponent } from '../stop-task/stop-task.component';
+
 @Component({
   selector: 'app-active-task',
   templateUrl: './active-task.component.html',
@@ -20,18 +23,23 @@ export class ActiveTaskComponent implements OnDestroy, OnInit {
   // Public properties
   public filteredTasks: Observable<Schema.ITask[]>;
   public tasks: Store.TasksState = {byId: {}, allIds: []};
+  public groups: Store.GroupsState;
   public activeTask: Store.ActiveTaskState = {id: 0};
   public started: DateTime = null;
   public startForm: FormGroup;
   public duration: string;
+  public latestTask: number;
 
   // Private properties
+  private _latest$: Subscription;
   private _tasks$: Subscription;
+  private _groups$: Subscription;
   private _timer$: Subscription;
   private _activeTask$: Subscription;
 
   constructor(
     private ngxs: Ngxs,
+    private dialog: MatDialog,
     private fb: FormBuilder
   ) {
     this._log('construct!');
@@ -50,11 +58,13 @@ export class ActiveTaskComponent implements OnDestroy, OnInit {
     this._log('init!');
     this._tasks$ = this.ngxs.select(state => state.hours.tasks).subscribe((tasks: Store.TasksState) => {
       this.tasks = tasks;
+      this.setLatestTask();
     });
+    this._groups$ = this.ngxs.select(state => state.hours.groups).subscribe((groups: Store.GroupsState) => this.groups = groups);
 
     this._activeTask$ = this.ngxs.select(state => state.hours.activeTask).subscribe((active: Store.ActiveTaskState) => {
       this._log('active task', active);
-      if (active && active.started) {
+      if (active && active.id > 0 && active.started) {
         this.started = DateTime.fromJSDate(active.started);
       } else {
         this.started = null;
@@ -84,17 +94,27 @@ export class ActiveTaskComponent implements OnDestroy, OnInit {
         return name ? this.filter(name) : this.tasks.allIds.map(id => this.tasks.byId[id]);
       })
     );
+
+    this._latest$ = this.ngxs.select(state => state.hours.latestTask).subscribe((taskId: number) => {
+      this.latestTask = taskId;
+      this.setLatestTask();
+    });
   }
 
   ngOnDestroy() {
-    this._log(
-      this._tasks$,
-      this._activeTask$,
-      this._timer$,
-    );
+    this._latest$.unsubscribe();
     this._tasks$.unsubscribe();
+    this._groups$.unsubscribe();
     this._activeTask$.unsubscribe();
     this._timer$.unsubscribe();
+  }
+
+  setLatestTask(): void {
+    if (this.tasks.byId[this.latestTask]) {
+      this.startForm.patchValue({
+        task: this.tasks.byId[this.latestTask]
+      });
+    }
   }
 
   filter(name: string): Schema.ITask[] {
@@ -112,15 +132,35 @@ export class ActiveTaskComponent implements OnDestroy, OnInit {
 
   startTask() {
     if (this.startForm.valid) {
-      this.ngxs.dispatch(new Store.StartTask(this.startForm.value.task));
+      this.ngxs.dispatch(new Store.StartTask(this.startForm.value.task)).toPromise().then((res) => {
+        // started
+        this._log('response', res);
+      }).catch(e => {
+        this._log('starting task failed!');
+      });
     }
   }
 
   stopTask() {
     if (this.activeTask.id > 0) {
-      this.ngxs.dispatch(new Store.StopTask()).toPromise().then(() => {
-        this.activeTask.started = null;
-        this.activeTask.id = 0;
+      this.dialog.open(StopTaskComponent, {
+        data: {
+          tasks: this.tasks.allIds.map(id => ({id, name: this.tasks.byId[id].name})),
+          start: this.activeTask.started,
+          id: this.activeTask.id,
+          end: new Date(),
+          notes: ''
+        }
+      }).afterClosed().toPromise().then((res: Schema.IStopTask) => {
+        if (res) {
+          this._log('Stopping task!', res);
+          this.ngxs.dispatch(new Store.StopTask(res)).toPromise().then(() => {
+            this.activeTask.started = null;
+            this.activeTask.id = 0;
+          });
+        } else {
+          this._log('Canceled task stop');
+        }
       });
     }
   }

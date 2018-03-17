@@ -16330,6 +16330,11 @@ onmessage = function (event) {
                 .then(function () { return replyTo(msg, {}); })
                 .catch(function (e) { return replyTo(msg, { error: e }); });
             break;
+        case __WEBPACK_IMPORTED_MODULE_1__db_messages__["a" /* DBMessageType */].GetLatestTask:
+            db.getLastestTask()
+                .then(function (id) { return replyTo(msg, { data: id }); })
+                .catch(function (e) { return replyTo(msg, { error: e }); });
+            break;
         case __WEBPACK_IMPORTED_MODULE_1__db_messages__["a" /* DBMessageType */].InsertGroup:
             db.insertGroup(msg.group)
                 .then(function (newId) { return replyTo(msg, { data: newId }); })
@@ -16361,7 +16366,7 @@ onmessage = function (event) {
                 .catch(function (e) { return replyTo(msg, { error: e.message }); });
             break;
         case __WEBPACK_IMPORTED_MODULE_1__db_messages__["a" /* DBMessageType */].StopTask:
-            db.setActiveTask(0)
+            db.stopActiveTask(msg.task)
                 .then(function (t) { return replyTo(msg, { data: t }); })
                 .catch(function (e) {
                 replyTo(msg, { error: e.name });
@@ -16399,6 +16404,7 @@ onmessage = function (event) {
 /* unused harmony export DBMessageStopTask */
 /* unused harmony export DBMessageUpdateGroup */
 /* unused harmony export DBMessageUpdateTask */
+/* unused harmony export DBMessageGetLatestTask */
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = Object.setPrototypeOf ||
         ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
@@ -16423,6 +16429,7 @@ var DBMessageType;
     DBMessageType["StopTask"] = "stop.task";
     DBMessageType["UpdateTask"] = "update.task";
     DBMessageType["CreateReport"] = "create.report";
+    DBMessageType["GetLatestTask"] = "read.latesttask";
 })(DBMessageType || (DBMessageType = {}));
 // UUID generator for messages
 var nextId = (function () {
@@ -16538,8 +16545,9 @@ var DBMessageStartTask = /** @class */ (function (_super) {
 
 var DBMessageStopTask = /** @class */ (function (_super) {
     __extends(DBMessageStopTask, _super);
-    function DBMessageStopTask() {
+    function DBMessageStopTask(task) {
         var _this = _super.call(this) || this;
+        _this.task = task;
         _this.type = DBMessageType.StopTask;
         return _this;
     }
@@ -16568,6 +16576,16 @@ var DBMessageUpdateTask = /** @class */ (function (_super) {
     return DBMessageUpdateTask;
 }(DBIdableMessage));
 
+var DBMessageGetLatestTask = /** @class */ (function (_super) {
+    __extends(DBMessageGetLatestTask, _super);
+    function DBMessageGetLatestTask() {
+        var _this = _super.call(this) || this;
+        _this.type = DBMessageType.GetLatestTask;
+        return _this;
+    }
+    return DBMessageGetLatestTask;
+}(DBIdableMessage));
+
 //# sourceMappingURL=db.messages.js.map
 
 /***/ }),
@@ -16577,6 +16595,8 @@ var DBMessageUpdateTask = /** @class */ (function (_super) {
 "use strict";
 /* unused harmony export DBName */
 /* unused harmony export Setting */
+/* unused harmony export DateFormat */
+/* unused harmony export TimeFormat */
 /* unused harmony export TimestampFormat */
 /* unused harmony export Work */
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return HoursDB; });
@@ -16611,14 +16631,18 @@ var DBName = 'Hours';
 var Setting;
 (function (Setting) {
     Setting["ActiveTask"] = "ActiveTask";
+    Setting["PreviousTask"] = "PreviousTask";
 })(Setting || (Setting = {}));
-var TimestampFormat = 'YYYY-MM-DDTHH:mm:ss';
+var DateFormat = 'YYYY-MM-DD';
+var TimeFormat = 'HH:mm:ss';
+var TimestampFormat = DateFormat + 'T' + TimeFormat;
 // Class version of IWork with some helpers
 var Work = /** @class */ (function () {
     function Work(work) {
         Object.assign(this, work);
         this._start = new Date(this.start);
         this._end = new Date(this.end);
+        this.note = work.note;
     }
     Object.defineProperty(Work.prototype, "duration", {
         get: function () {
@@ -16649,7 +16673,14 @@ var HoursDB = /** @class */ (function (_super) {
                     var at = { taskId: 0, started: '' };
                     return _this.settings.add({ name: Setting.ActiveTask, value: at });
                 }
-                return Promise.resolve(undefined);
+                return Promise.resolve(null);
+            }).then(function () {
+                return _this.settings.get(Setting.PreviousTask);
+            }).then(function (s) {
+                if (s === undefined) {
+                    return _this.settings.add({ name: Setting.PreviousTask, value: 0 });
+                }
+                return Promise.resolve(null);
             });
         });
         _this._log('init finished');
@@ -16704,7 +16735,7 @@ var HoursDB = /** @class */ (function (_super) {
         });
     };
     // insertGroup inserts a single group into the database.
-    // Returns a promise that resolves with the new id of the inserted group.
+    // Returns a promise that resolves with the new group.
     HoursDB.prototype.insertGroup = function (group) {
         var _this = this;
         this._log('insert.group', group);
@@ -16715,7 +16746,7 @@ var HoursDB = /** @class */ (function (_super) {
         });
     };
     // insertTask inserts a single task into the database.
-    // Returns a promise that resolves with the new id of the inserted task.
+    // Returns a promise that resolves with the new task.
     HoursDB.prototype.insertTask = function (task) {
         var _this = this;
         this._log('insert.task', task);
@@ -16738,7 +16769,7 @@ var HoursDB = /** @class */ (function (_super) {
                 .catch(function (reason) { return reject(reason); });
         });
     };
-    // createReport returns history entries
+    // createReport returns a report with the given options
     HoursDB.prototype.createReport = function (options) {
         var _this = this;
         this._log('read.history, options:', options);
@@ -16777,9 +16808,9 @@ var HoursDB = /** @class */ (function (_super) {
                 return taskFilter.indexOf(work.taskId) > -1;
             }).toArray();
         }).then(function (result) {
-            var report = { tasks: [], days: [], total: 0 };
             var days = [];
             var tasks = [];
+            var notes = [];
             var taskIndex = {};
             var total = 0;
             var ddata;
@@ -16812,12 +16843,12 @@ var HoursDB = /** @class */ (function (_super) {
                 ddata.tasks[w.taskId] = (ddata.tasks[w.taskId] || 0) + w.duration;
                 tasks[taskIndex[w.taskId]].total += w.duration;
                 total += w.duration;
+                // Add to notes if note is set.
+                if (w.note) {
+                    notes.push({ note: w.note, taskId: w.taskId, started: w.start, duration: w.duration });
+                }
             });
-            report.days = days;
-            report.tasks = tasks;
-            report.total = total;
-            _this._log('returning report', report);
-            return report;
+            return { days: days, tasks: tasks, total: total, notes: notes };
         });
     };
     // readTasks reads all task entries from the database.
@@ -16834,11 +16865,11 @@ var HoursDB = /** @class */ (function (_super) {
         });
     };
     // setActiveTask sets given task active and stops any previous tasks and
-    // automatically places the stopped task into history
+    // automatically places the stopped task into history.
+    // Resolves with the new active task.
     HoursDB.prototype.setActiveTask = function (taskId) {
         var _this = this;
         var nextTask;
-        var prevTask;
         var now = new Date().toISOString().replace(/\.[0-9]+Z$/, 'Z');
         return this.transaction('rw', this.settings, this.history, this.tasks, function () {
             return _this.tasks.get(taskId).then(function (t) {
@@ -16850,33 +16881,80 @@ var HoursDB = /** @class */ (function (_super) {
                     return _this.settings.get(Setting.ActiveTask);
                 }
             }).then(function (s) {
-                if (s !== undefined) {
-                    prevTask = s.value;
-                    _this._log("prev: " + prevTask.taskId + " (started: " + prevTask.started + ")");
+                if (s !== undefined && s.value.taskId !== 0) {
+                    _this._log("task already active: " + s.value.taskId);
+                    return Promise.reject(new Error('task active'));
                 }
                 // Set active task to given value.
+                return _this.settings.update(Setting.PreviousTask, { value: taskId });
+            }).then(function () {
                 return _this.settings.update(Setting.ActiveTask, {
                     value: { taskId: taskId, started: now }
                 });
             }).then(function (ok) {
-                _this._log('was settings update ok? ', ok);
-                // Only add to history if previous task was something else than 0.
-                if (!prevTask || prevTask.taskId === 0) {
-                    return Promise.resolve(0);
+                if (!ok) {
+                    _this._log("updating active task failed!");
+                    return Promise.reject(new Error('setting active task failed'));
                 }
-                else {
-                    _this._log('adding to history...');
-                    return _this.history.add({
-                        taskId: prevTask.taskId,
-                        start: prevTask.started,
-                        end: now
-                    });
-                }
-            }).then(function () {
                 return _this.settings.get(Setting.ActiveTask);
             }).then(function (s) {
                 _this._log('responding with:', s.value);
                 return s.value;
+            });
+        });
+    };
+    // stopActiveTask stops the currently active task and records time spent to
+    // database.
+    HoursDB.prototype.stopActiveTask = function (task) {
+        var _this = this;
+        var end = new Date().toISOString().replace(/\.[0-9]+Z$/, 'Z');
+        var start;
+        var taskId;
+        var note = task.note;
+        return this.transaction('rw', this.settings, this.history, this.tasks, function () {
+            return _this.settings.get(Setting.ActiveTask).then(function (s) {
+                if (s.value.taskId === 0) {
+                    return Promise.reject(new Error('task not active'));
+                }
+                if (task.taskId && task.taskId !== s.value.taskId) {
+                    return _this.tasks.get(task.taskId).then(function (t) {
+                        if (t === undefined) {
+                            return Promise.reject(__WEBPACK_IMPORTED_MODULE_1_dexie__["a" /* default */].NotFoundError);
+                        }
+                        return Promise.resolve({ taskId: t.id, started: s.value.started });
+                    });
+                }
+                return Promise.resolve(s.value);
+            }).then(function (at) {
+                if (task.stopped) {
+                    try {
+                        end = new Date(task.stopped).toISOString().replace(/\.[0-9]+Z$/, 'Z');
+                    }
+                    catch (e) {
+                        return Promise.reject(e);
+                    }
+                }
+                if (task.started) {
+                    try {
+                        start = new Date(task.started).toISOString().replace(/\.[0-9]+Z$/, 'Z');
+                    }
+                    catch (e) {
+                        return Promise.reject(e);
+                    }
+                }
+                else {
+                    start = at.started;
+                }
+                taskId = at.taskId;
+                // Set active task to given value.
+                return _this.settings.update(Setting.ActiveTask, {
+                    value: { taskId: 0, started: null }
+                });
+            }).then(function (ok) {
+                if (!ok) {
+                    return Promise.reject(new Error('stopping task failed'));
+                }
+                return _this.history.add({ taskId: taskId, start: start, end: end, note: note });
             });
         });
     };
@@ -16904,6 +16982,11 @@ var HoursDB = /** @class */ (function (_super) {
             }).then(function (g) {
                 return g;
             });
+        });
+    };
+    HoursDB.prototype.getLastestTask = function () {
+        return this.settings.get(Setting.PreviousTask).then(function (s) {
+            return s ? s.value : 0;
         });
     };
     return HoursDB;

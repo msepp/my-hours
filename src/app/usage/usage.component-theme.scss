@@ -44,7 +44,7 @@
     font-weight: 700;
   }
 
-  .app-report {
+  .app-report, .app-report-notes {
     @include mat-table-theme($theme);
     @include mat-table-typography($typography);
   }
@@ -60,5 +60,9 @@
   .app-report-total {
     text-align: right;
     font-weight: 700;
+  }
+
+  .app-report-table-title {
+    @include mat-typography-level-to-styles($typography, subheading-1);
   }
 }

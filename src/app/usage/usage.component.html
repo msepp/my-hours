@@ -35,30 +35,58 @@
   </form>
 </mat-expansion-panel>
 
+<h3 class="app-report-table-title">Time spent</h3>
 <div class="app-report-container">
   <div class="app-report mat-table" #reportTable>
-  <div *ngIf="report.tasks.length === 0; then noResults else resultTable"></div>
-  <ng-template #resultTable>
-    <div class="mat-header-row">
-      <div class="app-report-task mat-header-cell">Task</div>
-      <div class="app-report-day mat-header-cell" *ngFor="let d of report.days">{{d.day}}</div>
-      <div class="app-report-total mat-header-cell">Task total</div>
-    </div>
+    <div *ngIf="report.tasks.length === 0; then noResults else resultTable"></div>
+    <ng-template #resultTable>
+      <div class="mat-header-row">
+        <div class="app-report-task mat-header-cell">Task</div>
+        <div class="app-report-day mat-header-cell" *ngFor="let d of report.days">{{d.day}}</div>
+        <div class="app-report-total mat-header-cell">Task total</div>
+      </div>
 
-    <div class="mat-row" *ngFor="let t of report.tasks">
-      <div class="app-report-task mat-cell"><span [class]="'text-' + t.color">{{t.name}}</span></div>
-      <div class="app-report-day mat-cell" *ngFor="let d of report.days">{{d.tasks[t.id]|duration}}</div>
-      <div class="app-report-total mat-cell">{{t.total|duration}}</div>
-    </div>
+      <div class="mat-row" *ngFor="let t of report.tasks">
+        <div class="app-report-task mat-cell"><span [class]="'text-' + t.color">{{t.name}}</span></div>
+        <div class="app-report-day mat-cell" *ngFor="let d of report.days">{{d.tasks[t.id]|duration}}</div>
+        <div class="app-report-total mat-cell">{{t.total|duration}}</div>
+      </div>
 
-    <div class="mat-row mat-footer-row">
-      <div class="app-report-task mat-cell mat-footer-cell">Day total</div>
-      <div class="app-report-day mat-cell mat-footer-cell" *ngFor="let d of report.days">{{d.total|duration}}</div>
-      <div class="app-report-total mat-cell mat-footer-cell">{{report.total|duration}}</div>
-    </div>
-  </ng-template>
-  <ng-template #noResults>
-    <p class="app-report-no-results-title">No results for query</p>
-  </ng-template>
+      <div class="mat-row mat-footer-row">
+        <div class="app-report-task mat-cell mat-footer-cell">Day total</div>
+        <div class="app-report-day mat-cell mat-footer-cell" *ngFor="let d of report.days">{{d.total|duration}}</div>
+        <div class="app-report-total mat-cell mat-footer-cell">{{report.total|duration}}</div>
+      </div>
+    </ng-template>
+    <ng-template #noResults>
+      <p class="app-report-no-results-title">No results for query</p>
+    </ng-template>
+  </div>
+</div>
+
+<h3 class="app-report-table-title">Notes</h3>
+<div class="app-report-container">
+  <div class="app-report-notes mat-table" #notesTable>
+    <div *ngIf="report.notes.length === 0; then noNotes else resultNotes"></div>
+    <ng-template #resultNotes>
+      <div class="mat-header-row">
+        <div class="app-report-note-task mat-header-cell">Task</div>
+        <div class="app-report-started-date mat-header-cell">Date</div>
+        <div class="app-report-started-time mat-header-cell">Time</div>
+        <div class="app-report-duration mat-header-cell">Duration</div>
+        <div class="app-report-note mat-header-cell">Note</div>
+      </div>
+
+      <div class="mat-row" *ngFor="let note of report.notes">
+        <div class="app-report-note-task mat-cell"><span [class]="'text-' + note.taskColor">{{note.taskName}}</span></div>
+        <div class="app-report-started-date mat-cell">{{toLocalTime(note.started).date}}</div>
+        <div class="app-report-started-time mat-cell">{{toLocalTime(note.started).time}}</div>
+        <div class="app-report-duration mat-cell">{{note.duration|duration}}</div>
+        <div class="app-report-note mat-cell">{{note.note}}</div>
+      </div>
+    </ng-template>
+    <ng-template #noNotes>
+      <p class="app-report-no-results-title">No notes</p>
+    </ng-template>
   </div>
 </div>

@@ -3,6 +3,7 @@
 
 // Define a mixin that accepts a theme and outputs the color styles for the component.
 @mixin app-global-styles($theme, $typography) {
+  $primary: map-get($theme, primary);
   $background: map-get($theme, background);
   $foreground: map-get($theme, foreground);
 
@@ -20,5 +21,14 @@
   .app-no-results-title {
     @include mat-typography-level-to-styles($typography, title);
     text-align: center;
+  }
+
+  mat-dialog-actions {
+    justify-content: flex-end;
+  }
+
+  .active-nav-entry {
+    background-color: mat-contrast($primary, 200);
+    color: mat-color($primary, 200);
   }
 }

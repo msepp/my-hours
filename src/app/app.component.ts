@@ -16,10 +16,11 @@ export class AppComponent implements OnDestroy, OnInit {
   public activeView = '';
   public mobileQuery: MediaQueryList;
   public nav = [
-    {target: '/active-task', name: 'Active task'},
-    {target: '/groups', name: 'Groups'},
-    {target: '/tasks', name: 'Tasks'},
-    {target: '/usage', name: 'Reports'},
+    {target: '/active-task', name: 'Active task', icon: 'timer'},
+    {target: '/groups', name: 'Groups', icon: 'group_work'},
+    {target: '/tasks', name: 'Tasks', icon: 'assignment'},
+    {target: '/usage', name: 'Reports', icon: 'timeline'},
+    {target: '/about', name: 'About', icon: 'info'},
   ];
 
   // Private properties

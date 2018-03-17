@@ -1,0 +1,5 @@
+:host {
+  display: block;
+  // Allow scrolling past end so that 'add group' button doesn't hide last group.
+  padding: 1rem 1rem 80px;
+}

@@ -12,6 +12,12 @@ import { WebWorkerService } from '@services/web-worker';
 
 interface Report extends Schema.IReport {
   tasks: Schema.IReportTask[];
+  notes: ReportNote[];
+}
+
+interface ReportNote extends Schema.IReportNote {
+  taskName: string;
+  taskColor: string;
 }
 
 @Component({
@@ -26,7 +32,7 @@ export class UsageComponent implements OnInit, OnDestroy {
   public mobileQuery: MediaQueryList;
   public tasks: Store.TasksState;
   public groups: Store.GroupsState;
-  public report: Report = { days: [], tasks: [], total: 0 };
+  public report: Report = { days: [], tasks: [], total: 0, notes: [] };
   public reportForm: FormGroup;
   public prettyStart: string;
   public prettyEnd: string;
@@ -107,7 +113,7 @@ export class UsageComponent implements OnInit, OnDestroy {
     this.wws.report(opts).then(report => {
       if (report.tasks.length === 0) {
         this.elReportTable.nativeElement.style.minWidth = 'auto';
-        this.report = {tasks: [], days: [], total: 0};
+        this.report = {tasks: [], days: [], total: 0, notes: []};
       } else {
         this.report.days = report.days;
         this.report.tasks = report.tasks.map(t => {
@@ -122,6 +128,18 @@ export class UsageComponent implements OnInit, OnDestroy {
           return { ...t, name, color };
         });
 
+        this.report.notes = report.notes.map(n => {
+          let taskName = `(deleted/id:${n.taskId})`;
+          let taskColor = 'color-deleted';
+
+          if (this.tasks.byId[n.taskId]) {
+            taskName = this.tasks.byId[n.taskId].name;
+            taskColor = this.tasks.byId[n.taskId].settings.color;
+          }
+
+          return { ...n, taskName, taskColor };
+        });
+
         this.report.total = report.total;
         this.elReportTable.nativeElement.style.minWidth = `${(report.days.length + 2) * 100}px`;
       }
@@ -129,5 +147,13 @@ export class UsageComponent implements OnInit, OnDestroy {
       this.reportForm.enable();
       this.optionsPanel.close();
     });
+  }
+
+  public toLocalTime(s: string): {date: string, time: string} {
+    const d = moment(s).local();
+    return {
+      date: d.format(Schema.DateFormat),
+      time: d.format(Schema.TimeFormat)
+    };
   }
 }

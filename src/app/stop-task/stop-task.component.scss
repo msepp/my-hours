@@ -1,0 +1,16 @@
+.form-row-flex {
+  display: flex;
+  flex-wrap: wrap;
+
+  mat-form-field {
+    flex: 1;
+
+    &:first-child {
+      margin-right: 7px;
+    }
+
+    input[type=time] {
+      height: 18px;
+    }
+  }
+}

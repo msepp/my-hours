@@ -118,6 +118,7 @@ export class WebWorkerService {
     return new Promise<Schema.IActiveTask>((resolve, reject) => {
       const msg = new DBMessages.DBMessageStartTask(task);
       this._post(msg).then(r => {
+        this._log('response:', r);
         if (r.error) {
           reject(r.error);
         } else {
@@ -127,9 +128,9 @@ export class WebWorkerService {
     });
   }
 
-  stopTask(): Promise<void> {
+  stopTask(task: Schema.IStopTask): Promise<void> {
     return new Promise<void>((resolve, reject) => {
-      const msg = new DBMessages.DBMessageStopTask();
+      const msg = new DBMessages.DBMessageStopTask(task);
       this._post(msg).then(r => {
         this._log(r);
         if (r.error) {
@@ -153,6 +154,15 @@ export class WebWorkerService {
   updateTask(task: Schema.ITask): Promise<Schema.ITask> {
     return new Promise<Schema.ITask>((resolve, reject) => {
       const msg = new DBMessages.DBMessageUpdateTask(task);
+      this._post(msg).then(r => {
+        resolve(r.data);
+      });
+    });
+  }
+
+  getLatestTask(): Promise<number> {
+    return new Promise<number>((resolve, reject) => {
+      const msg = new DBMessages.DBMessageGetLatestTask();
       this._post(msg).then(r => {
         resolve(r.data);
       });

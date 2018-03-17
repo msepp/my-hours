@@ -1,0 +1,19 @@
+// Import all the tools needed to customize the theme and extract parts of it
+@import '~@angular/material/theming';
+
+// Define a mixin that accepts a theme and outputs the color styles for the component.
+@mixin about-theme($theme, $typography) {
+  $primary: map-get($theme, primary);
+  app-about {
+    h1 {
+      @include mat-typography-level-to-styles($typography, title);
+    }
+    p {
+      @include mat-typography-level-to-styles($typography, body-1);
+    }
+
+    a {
+      color: mat-color($primary);
+    }
+  }
+}
