@@ -62,7 +62,7 @@ export class StopTaskComponent implements OnInit, OnDestroy {
     if (this.stopTaskForm.valid) {
       const v = this.stopTaskForm.value;
       const res: Schema.IStopTask = {
-        taskId: v.id,
+        taskId: v.taskId,
         note: v.notes,
         started: this.datetime(v.start.format(Schema.DateFormat) + 'T' + v.startTime),
         stopped: this.datetime(v.end.format(Schema.DateFormat) + 'T' + v.endTime),
