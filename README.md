@@ -15,7 +15,7 @@ A small PWA for tracking time used.
 
 ## Demo
 
-A demo can be viewed at (https://msepp.net/my-hours/index.html)
+A demo can be viewed at (https://my-hours.msepp.net/), no login needed!
 
 ## About
 
