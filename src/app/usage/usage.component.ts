@@ -83,11 +83,11 @@ export class UsageComponent implements OnInit, OnDestroy {
       end: moment().endOf('isoWeek')
     });
 
-    this._tasks$ = this.ngxs.select(state => state.hours.tasks).subscribe(tasks => {
+    this._tasks$ = this.ngxs.select(state => state.hours.tasks).subscribe((tasks: Store.TasksState) => {
       this.tasks = tasks;
     });
 
-    this._groups$ = this.ngxs.select(state => state.hours.groups).subscribe(groups => {
+    this._groups$ = this.ngxs.select(state => state.hours.groups).subscribe((groups: Store.GroupsState) => {
       this.groups = groups;
     });
 
